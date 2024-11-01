@@ -1,0 +1,71 @@
+import pygame
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Set up the display
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Pygame Landscape with Animation")
+
+# Define colors
+SKY_BLUE = (135, 206, 235)  # Light blue for the sky
+GREEN = (0, 255, 0)         # Green for the ground
+YELLOW = (255, 255, 0)      # Yellow for the house body
+BROWN = (139, 69, 19)       # Brown for the roof
+
+# Clock for controlling the frame rate
+clock = pygame.time.Clock()
+
+# Variables for the sun animation
+sun_x = 400
+sun_y = 150
+sun_size = 80
+color_change_counter = 0
+
+# House positions (x-coordinates)
+houses = [
+    (300, HEIGHT - 200),  # House 1
+    (450, HEIGHT - 200),  # House 2
+    (600, HEIGHT - 200),  # House 3
+]
+
+# Main loop
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    # Fill the background (sky)
+    screen.fill(SKY_BLUE)
+
+    # Draw the landscape (simple shapes)
+    pygame.draw.rect(screen, GREEN, (0, HEIGHT - 100, WIDTH, 100))  # Ground
+
+    # Animation: Move the sun
+    sun_x += 1
+    if sun_x > WIDTH + sun_size:  # If the sun goes off the right side
+        sun_x = -sun_size  # Reset to the left
+
+    # Change color of the sun gradually
+    if color_change_counter < 255:
+        color_change_counter += 1
+    else:
+        color_change_counter = 0  # Reset color change
+
+    # Draw the sun with changing color
+    sun_color = (255, color_change_counter, 0)  # Color changes from yellow to red
+    pygame.draw.circle(screen, sun_color, (int(sun_x), sun_y), int(sun_size))  # Sun
+
+    # Draw houses (centered)
+    for x, y in houses:
+        # House body
+        pygame.draw.rect(screen, YELLOW, (x, y, 100, 100))  # House body
+        # Roof
+        pygame.draw.polygon(screen, BROWN, [(x, y), (x + 50, y - 50), (x + 100, y)])  # Roof
+
+    # Update the display
+    pygame.display.flip()
+    clock.tick(60)  # Limit to 60 frames per second
