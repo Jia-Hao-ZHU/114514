@@ -1,71 +1,67 @@
 import pygame
 import sys
-
-# Initialize Pygame
 pygame.init()
 
-# Set up the display
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Pygame Landscape with Animation")
+pygame.display.set_caption("Moving Sun Landscape")
 
-# Define colors
-SKY_BLUE = (135, 206, 235)  # Light blue for the sky
-GREEN = (0, 255, 0)         # Green for the ground
-YELLOW = (255, 255, 0)      # Yellow for the house body
-BROWN = (139, 69, 19)       # Brown for the roof
+SKY_COLOR = (135, 206, 235)
+MOUNTAIN_COLOR = (50, 50, 50)
+HILL_COLOR = (34, 139, 34)
+HOUSE_COLOR = (200, 150, 100)
+ROOF_COLOR = (150, 75, 0)
+DOOR_COLOR = (100, 50, 25)
+WINDOW_COLOR = (255, 255, 200)
 
-# Clock for controlling the frame rate
+sun_radius = 50
+sun_x = 0  
+sun_y = 100  
+
+def draw_mountains():
+    pygame.draw.polygon(screen, MOUNTAIN_COLOR, [(100, HEIGHT), (300, 300), (500, HEIGHT)])
+    pygame.draw.polygon(screen, MOUNTAIN_COLOR, [(400, HEIGHT), (600, 350), (800, HEIGHT)])
+
+def draw_hills():
+    pygame.draw.ellipse(screen, HILL_COLOR, (-200, HEIGHT - 150, 400, 300))
+    pygame.draw.ellipse(screen, HILL_COLOR, (100, HEIGHT - 200, 500, 400))
+    pygame.draw.ellipse(screen, HILL_COLOR, (400, HEIGHT - 180, 500, 300))
+    pygame.draw.ellipse(screen, HILL_COLOR, (600, HEIGHT - 150, 400, 300))
+
+def draw_house(x, y, width, height):
+    # House body
+    pygame.draw.rect(screen, HOUSE_COLOR, (x, y, width, height))
+    # Roof
+    pygame.draw.polygon(screen, ROOF_COLOR, [(x, y), (x + width // 2, y - height // 2), (x + width, y)])
+    # Door
+    door_width = width // 4
+    door_height = height // 2
+    pygame.draw.rect(screen, DOOR_COLOR, (x + width // 2 - door_width // 2, y + height - door_height, door_width, door_height))
+    # Windows
+    window_size = width // 5
+    pygame.draw.rect(screen, WINDOW_COLOR, (x + width // 4 - window_size // 2, y + height // 3, window_size, window_size))
+    pygame.draw.rect(screen, WINDOW_COLOR, (x + 3 * width // 4 - window_size // 2, y + height // 3, window_size, window_size))
+
 clock = pygame.time.Clock()
-
-# Variables for the sun animation
-sun_x = 400
-sun_y = 150
-sun_size = 80
-color_change_counter = 0
-
-# House positions (x-coordinates)
-houses = [
-    (300, HEIGHT - 200),  # House 1
-    (450, HEIGHT - 200),  # House 2
-    (600, HEIGHT - 200),  # House 3
-]
-
-# Main loop
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-    # Fill the background (sky)
-    screen.fill(SKY_BLUE)
+    sun_x += 1  
+    if sun_x > WIDTH:
+        sun_x = -sun_radius 
 
-    # Draw the landscape (simple shapes)
-    pygame.draw.rect(screen, GREEN, (0, HEIGHT - 100, WIDTH, 100))  # Ground
+    sun_color = (255, 255 - (sun_x % 255), 0)
 
-    # Animation: Move the sun
-    sun_x += 1
-    if sun_x > WIDTH + sun_size:  # If the sun goes off the right side
-        sun_x = -sun_size  # Reset to the left
+    screen.fill(SKY_COLOR)
+    draw_mountains()
+    draw_hills()
 
-    # Change color of the sun gradually
-    if color_change_counter < 255:
-        color_change_counter += 1
-    else:
-        color_change_counter = 0  # Reset color change
-
-    # Draw the sun with changing color
-    sun_color = (255, color_change_counter, 0)  # Color changes from yellow to red
-    pygame.draw.circle(screen, sun_color, (int(sun_x), sun_y), int(sun_size))  # Sun
-
-    # Draw houses (centered)
-    for x, y in houses:
-        # House body
-        pygame.draw.rect(screen, YELLOW, (x, y, 100, 100))  # House body
-        # Roof
-        pygame.draw.polygon(screen, BROWN, [(x, y), (x + 50, y - 50), (x + 100, y)])  # Roof
-
-    # Update the display
+    draw_house(150, HEIGHT - 150, 80, 100)
+    draw_house(350, HEIGHT - 180, 80, 100)
+    draw_house(600, HEIGHT - 160, 80, 100)
+    pygame.draw.circle(screen, sun_color, (sun_x, sun_y), sun_radius)
     pygame.display.flip()
-    clock.tick(60)  # Limit to 60 frames per second
+    clock.tick(60)
