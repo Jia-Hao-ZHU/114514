@@ -1,5 +1,4 @@
 import pygame
-import sys
 pygame.init()
 
 WIDTH, HEIGHT = 800, 600
@@ -47,7 +46,6 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            sys.exit()
 
     sun_x += 1  
     if sun_x > WIDTH:
